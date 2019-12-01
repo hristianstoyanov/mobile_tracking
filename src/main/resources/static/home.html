@@ -1,0 +1,115 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <style>
+        .heightClass{
+            height: 100%;
+            overflow: hidden;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./js.sources/moment.js"/>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/eonasdan-bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+
+</head>
+<body>
+
+ 
+<script type="text/javascript">
+    $(".form_datetime").datetimepicker({
+        format: "dd MM yyyy - hh:ii"
+    });
+</script>
+
+<div class="container-fluid">
+        <!-- Header row -->
+        <div class="row bg-primary">
+            <!-- Unique code column-->
+            <div class="col-sm-2">
+                <!--<span>Device unique code:</span>-->
+                <input type='text' class="form-control"/>
+            </div>
+
+            <!-- Start date column-->
+            <div class='col-sm-4'>
+                <div class="form-group">
+                    <div class='input-group date' id='startDateTimePicker'>
+                        <input type='text' class="form-control" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- End date column-->
+            <div class='col-sm-4'>
+                <div class="form-group">
+                    <div class='input-group date' id='endDateTimePicker'>
+                        <input type='text' class="form-control" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Time zone column-->
+            <div class='col-sm-1'>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary dropdown-toggle btn-sm-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Action
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Separated link</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Send button column-->
+            <div class='col-sm-1'>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-success dropdown-toggle btn-sm-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Track
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col heightClass" id="map"></div>
+    </div>
+
+</div>
+<!--<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC128Q00uK83vyquPcQTmgGSWJQ4nizR7A&callback=initMap" type="text/javascript"></script>-->
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+<script type="text/javascript">
+    var map;
+    window.onload = function initialize() {
+        var mapOptions = {
+            zoom: 8,
+            center: new google.maps.LatLng(-34.397, 150.644),
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        map = new google.maps.Map(document.getElementById('map'),
+                mapOptions);
+    };
+
+
+    $(function () {
+        $('#startDateTimePicker').datetimepicker();
+    });
+</script>
+
+</body>
+</html>
