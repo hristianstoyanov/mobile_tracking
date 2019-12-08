@@ -1,26 +1,24 @@
 <html>
 <head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
     <style>
         .heightClass{
             height: 100%;
             overflow: hidden;
         }
     </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <script type="text/javascript" src="./js.sources/moment.js"/>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/eonasdan-bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
-
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.5/umd/popper.js"/>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.bundle.js">
+        $(document).ready(function() {
+            $(".dropdown-toggle").dropdown();
+        });
+    </script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/eonasdan-bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 </head>
-<body>
-
- 
-<script type="text/javascript">
-    $(".form_datetime").datetimepicker({
-        format: "dd MM yyyy - hh:ii"
-    });
-</script>
+<body onload="initialize()">
 
 <div class="container-fluid">
         <!-- Header row -->
@@ -28,7 +26,7 @@
             <!-- Unique code column-->
             <div class="col-sm-2">
                 <!--<span>Device unique code:</span>-->
-                <input type='text' class="form-control"/>
+                <input id="deviceUniqueCode" type='text' class="form-control"/>
             </div>
 
             <!-- Start date column-->
@@ -58,9 +56,7 @@
             <!-- Time zone column-->
             <div class='col-sm-1'>
                 <div class="btn-group">
-                    <button type="button" class="btn btn-secondary dropdown-toggle btn-sm-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Action
-                    </button>
+                    <button id="timeZoneTypeButton" type="button" class="btn btn-secondary dropdown-toggle btn-sm-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
                     <div class="dropdown-menu">
                         <a class="dropdown-item" href="#">Action</a>
                         <a class="dropdown-item" href="#">Another action</a>
@@ -74,7 +70,7 @@
             <!-- Send button column-->
             <div class='col-sm-1'>
                 <div class="btn-group">
-                    <button type="button" class="btn btn-success dropdown-toggle btn-sm-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button onclick="track()" type="button" class="btn btn-success dropdown-toggle btn-sm-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Track
                     </button>
                 </div>
@@ -86,6 +82,7 @@
 </div>
 
 <div class="container-fluid">
+    <!-- Google maps row -->
     <div class="row">
         <div class="col heightClass" id="map"></div>
     </div>
@@ -94,21 +91,112 @@
 <!--<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC128Q00uK83vyquPcQTmgGSWJQ4nizR7A&callback=initMap" type="text/javascript"></script>-->
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
 <script type="text/javascript">
-    var map;
-    window.onload = function initialize() {
-        var mapOptions = {
-            zoom: 8,
-            center: new google.maps.LatLng(-34.397, 150.644),
-            mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-        map = new google.maps.Map(document.getElementById('map'),
-                mapOptions);
-    };
-
-
+   var mapVariable;
     $(function () {
         $('#startDateTimePicker').datetimepicker();
     });
+
+    $(function () {
+        $('#endDateTimePicker').datetimepicker();
+    });
+
+    $(".form_datetime").datetimepicker({
+        format: "dd MM yyyy - hh:ii"
+    });
+
+
+    function track() {
+        let deviceUniqueCode = $('#deviceUniqueCode').val();
+
+        if (deviceUniqueCode === "") {
+            alert("Please add device unique code.");
+            return;
+        }
+
+        let startDateTime = $('#startDateTimePicker').data("DateTimePicker").date();
+        if (startDateTime != null) {
+            startDateTime = startDateTime.format("YYYY-MM-DDTHH:mm");
+        }
+
+        let endDateTime = $('#endDateTimePicker').data("DateTimePicker").date();
+        if (endDateTime != null) {
+            endDateTime = endDateTime.format("YYYY-MM-DDTHH:mm");
+        }
+
+        if (startDateTime == null) {
+            alert("Please add start date at least.");
+            return;
+        }
+
+        let timeZoneType = $('#timeZoneTypeButton').html();
+
+        if (deviceUniqueCode != "" && (startDateTime != null)) {
+            let trackingObject = new Object();
+            trackingObject.deviceUniqueCode = deviceUniqueCode;
+            trackingObject.startDateTime = startDateTime;
+            trackingObject.endDateTime = endDateTime;
+//            trackingObject.timeZoneType = timeZoneType;
+            trackingObject.timeZoneType = "UTC";
+
+            let jsonString = JSON.stringify(trackingObject);
+            sendToServer(jsonString);
+        } else if (deviceUniqueCode != "") {
+            // TODO send get request to start socket communication
+        }
+
+    }
+
+    function sendToServer(jsonString) {
+        console.log(mapVariable);
+        $.ajax({
+            type: "POST",
+            url: "/web/track/period",
+            data: jsonString,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(data){
+                console.log(mapVariable);
+                parseReturnedCoordinates(data);
+            },
+            failure: function(errMsg) {
+                console.log(data)
+            }
+        });
+    }
+
+// Google maps script below
+
+    function initialize() {
+
+        var uluru = {lat: 54, lng: 54};
+        mapVariable = new google.maps.Map(
+                document.getElementById('map'), {zoom: 2, center: uluru, mapTypeId: google.maps.MapTypeId.ROADMAP});
+
+    };
+
+    function moveMarker(latitude, longitude ) {
+
+        marker = new google.maps.Marker( {position: new google.maps.LatLng( latitude, longitude ), map: mapVariable} );
+        marker.setPosition( new google.maps.LatLng( latitude, longitude ) );
+        marker.setMap(mapVariable);
+        mapVariable.panTo( new google.maps.LatLng( latitude, longitude ) );
+        mapVariable.setZoom(13);
+
+    };
+
+    function parseReturnedCoordinates(listOfCoordinates) {
+        if (listOfCoordinates.length == 1) {
+            let latitude = listOfCoordinates[0].latitude;
+            let longitude = listOfCoordinates[0].longitude;
+            console.log("latitudeeee-----> " + latitude);
+            console.log("longi-----> " + longitude);
+            moveMarker(latitude, longitude);
+        }
+//        for (let i=0; i < coordinates.size(); i++) {
+//
+//        }
+    }
+
 </script>
 
 </body>

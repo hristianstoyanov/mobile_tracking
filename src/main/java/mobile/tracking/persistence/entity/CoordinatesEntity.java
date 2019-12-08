@@ -18,23 +18,27 @@ public class CoordinatesEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
             generator="coordinates_id_seq")
     @Column(name = "id")
-    private final Integer id;
+    private Integer id;
 
     @Column(name = "latitude")
-    private final BigDecimal latitude;
+    private BigDecimal latitude;
 
     @Column(name = "longitude")
-    private final BigDecimal longitude;
+    private BigDecimal longitude;
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "device_id")
-    private final DeviceEntity deviceEntity;
+    private DeviceEntity deviceEntity;
 
     @Column(name = "time")
-    private final LocalDateTime UTCDateTime;
+    private LocalDateTime UTCDateTime;
 
     @Column(name = "timezone")
-    private final String timeZone;
+    private String timeZone;
+
+    public CoordinatesEntity() {
+
+    }
 
     public CoordinatesEntity(final Integer id,
                              final BigDecimal latitude,
@@ -61,5 +65,29 @@ public class CoordinatesEntity {
         this.UTCDateTime = UTCDateTime;
         this.timeZone = timeZone;
         this.deviceEntity = deviceEntity;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public BigDecimal getLatitude() {
+        return latitude;
+    }
+
+    public BigDecimal getLongitude() {
+        return longitude;
+    }
+
+    public DeviceEntity getDeviceEntity() {
+        return deviceEntity;
+    }
+
+    public LocalDateTime getUTCDateTime() {
+        return UTCDateTime;
+    }
+
+    public String getTimeZone() {
+        return timeZone;
     }
 }
