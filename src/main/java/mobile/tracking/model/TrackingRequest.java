@@ -1,12 +1,9 @@
 package mobile.tracking.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import mobile.tracking.TrackingTimeZoneType;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * Created by Hristiyan on 8.12.2019 ã..
