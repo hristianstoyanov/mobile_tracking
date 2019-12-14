@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Created by Hristiyan on 7.12.2019 ã..
+ * Created by Hristiyan on 7.12.2019 ï¿½..
  */
 @RestController
 @RequestMapping("/web/track")
@@ -46,4 +46,5 @@ public class WebController {
         }
 
     }
+
 }

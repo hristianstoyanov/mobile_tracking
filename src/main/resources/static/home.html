@@ -37,6 +37,8 @@
         }
 
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <script type="text/javascript" src="./js.sources/moment.js"/>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.5/umd/popper.js"/>
@@ -137,6 +139,7 @@
 
 
     function track() {
+        disconnect();
         let deviceUniqueCode = $('#deviceUniqueCode').val();
 
         if (deviceUniqueCode === "") {
@@ -155,8 +158,7 @@
         }
 
         if (startDateTime == null) {
-            alert("Please add start date at least.");
-            return;
+            connect(deviceUniqueCode);
         }
 
         let timeZoneType = $('#timeZoneTypeButton').html();
@@ -360,6 +362,47 @@
        linesArray.length = 0;
    }
 
+    // *** Streaming configuration ***
+   var stompClient = null;
+   function connect(deviceUniqueCode) {
+       var socket = new SockJS('/stream/tracking');
+       stompClient = Stomp.over(socket);
+       stompClient.connect({}, function(frame) {
+           setConnected(true);
+           console.log('Connected: ' + frame);
+
+           stompClient.subscribe('/topic/messages/' + deviceUniqueCode, function(messageOutput) {
+               console.log("Received streaming message ----> " + messageOutput.body);
+               showMessageOutput(JSON.parse(messageOutput.body));
+           });
+       });
+   }
+
+   function showMessageOutput(streamingCoordinates) {
+       let latitude = streamingCoordinates.latitude;
+       let longitude = streamingCoordinates.longitude;
+       let timestamp = streamingCoordinates.trackingTime;
+       console.log("latitudeeee-----> " + latitude);
+       console.log("longi-----> " + longitude);
+       clearMarkers();
+       moveMarker(latitude, longitude, timestamp);
+   }
+
+   function setConnected(connected) {
+       if (connected) {
+           alert("Streaming started");
+       } else {
+           alert("Streaming stopped");
+       }
+   }
+
+   function disconnect() {
+       if(stompClient != null) {
+           stompClient.disconnect();
+       }
+       setConnected(false);
+       console.log("Disconnected");
+   }
 </script>
 
 </body>
