@@ -5,6 +5,8 @@
         .inputFieldFont {
             font-size: small;
         }
+        .show {display: block;}
+
         .heightClass{
             height: 100%;
             overflow: hidden;
@@ -41,7 +43,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <script type="text/javascript" src="./js.sources/moment.js"/>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.5/umd/popper.js"/>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/esm/popper.js"/>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.bundle.js">
         $(document).ready(function() {
             $(".dropdown-toggle").dropdown();
@@ -88,14 +90,7 @@
             <!-- Time zone column-->
             <div class='col-sm-1'>
                 <div class="btn-group">
-                    <button id="timeZoneTypeButton" type="button" class="btn btn-secondary dropdown-toggle btn-sm-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Separated link</a>
-                    </div>
+                    <button onclick="selectTimeZone()" id="timeZoneTypeButton" type="button" class="btn btn-warning dropdown-toggle btn-sm-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Time</button>
                 </div>
             </div>
 
@@ -163,13 +158,20 @@
 
         let timeZoneType = $('#timeZoneTypeButton').html();
 
+        if ("Time" === timeZoneType) {
+            alert("Please select requested time zone - UTC or the device one");
+            return;
+        }
+        if ("DEV" === timeZoneType) {
+            timeZoneType = "DEVICE";
+        }
         if (deviceUniqueCode != "" && (startDateTime != null)) {
             let trackingObject = new Object();
             trackingObject.deviceUniqueCode = deviceUniqueCode;
             trackingObject.startDateTime = startDateTime;
             trackingObject.endDateTime = endDateTime;
-//            trackingObject.timeZoneType = timeZoneType;
-            trackingObject.timeZoneType = "UTC";
+            trackingObject.timeZoneType = timeZoneType;
+//            trackingObject.timeZoneType = "UTC";
 
             let jsonString = JSON.stringify(trackingObject);
             sendToServer(jsonString);
@@ -390,9 +392,9 @@
 
    function setConnected(connected) {
        if (connected) {
-           alert("Streaming started");
+           console.log("Streaming started");
        } else {
-           alert("Streaming stopped");
+           console.log("Streaming stopped");
        }
    }
 
@@ -403,6 +405,16 @@
        setConnected(false);
        console.log("Disconnected");
    }
+
+    // *** dropdown menu code ***
+    function selectTimeZone() {
+        let currentTimeZone = $("#timeZoneTypeButton").html();
+        if (currentTimeZone === "UTC") {
+            $("#timeZoneTypeButton").html("DEV");
+        } else {
+            $("#timeZoneTypeButton").html("UTC");
+        }
+    }
 </script>
 
 </body>
