@@ -37,7 +37,7 @@ public class MobileTrackingController implements TrackingController{
 
     @GetMapping("/str")
     public String trackingCode() {
-        streamingService.streamTest();
+//        streamingService.streamTest();
         return "aaaa";
     }
 

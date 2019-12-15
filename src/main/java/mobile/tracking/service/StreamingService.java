@@ -1,8 +1,6 @@
 package mobile.tracking.service;
 
-import mobile.tracking.model.Coordinates;
 import mobile.tracking.model.TrackingPoint;
-import mobile.tracking.model.dummy.OutputMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -22,8 +20,8 @@ public class StreamingService {
         template.convertAndSend("/topic/messages/" + deviceUniqueCode, trackingPoint);
     }
 
-    public void streamTest() {
-        template.convertAndSend("/topic/messages", new OutputMessage("aaa", "bbb", LocalDateTime.now().toString()));
-    }
+//    public void streamTest() {
+//        template.convertAndSend("/topic/messages", new OutputMessage("aaa", "bbb", LocalDateTime.now().toString()));
+//    }
 
 }
