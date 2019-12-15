@@ -1,0 +1,14 @@
+CREATE TABLE devices(
+	id SERIAL PRIMARY KEY,
+	device_unique_code VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE coordinates(
+	id SERIAL PRIMARY KEY,
+	latitude decimal(15,10) NOT NULL,
+	longitude decimal(15,10) NOT NULL,
+	device_id int REFERENCES devices(id) NOT NULL,
+	time TIMESTAMP NOT NULL,
+	timezone VARCHAR(255) NOT NULL,
+	UNIQUE(latitude,longitude,device_id,time,timezone)
+);
